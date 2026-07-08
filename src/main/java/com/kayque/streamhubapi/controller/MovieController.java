@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import com.kayque.streamhubapi.dto.UpdateMovieRequest;
 
 import java.util.List;
 
@@ -31,5 +32,19 @@ public class MovieController {
     @GetMapping("/{id}")
     public MovieResponse findById(@PathVariable Long id) {
         return service.findById(id);
+    }
+
+    @PutMapping("/{id}")
+    public MovieResponse update(
+            @PathVariable Long id,
+            @RequestBody @Valid UpdateMovieRequest request) {
+
+        return service.update(id, request);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable Long id) {
+        service.delete(id);
     }
 }

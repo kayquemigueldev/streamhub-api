@@ -9,6 +9,7 @@ import com.kayque.streamhubapi.repository.GenreRepository;
 import com.kayque.streamhubapi.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.kayque.streamhubapi.dto.UpdateMovieRequest;
 
 import java.util.List;
 
@@ -44,4 +45,35 @@ public class MovieService {
 
         return mapper.toResponse(movie);
     }
+
+    public MovieResponse update(Long id, UpdateMovieRequest request) {
+
+        Movie movie = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Movie not found"));
+
+        Genre genre = genreRepository.findById(request.genreId())
+                .orElseThrow(() -> new RuntimeException("Genre not found"));
+
+        movie.setTitle(request.title());
+        movie.setDescription(request.description());
+        movie.setReleaseYear(request.releaseYear());
+        movie.setDurationMinutes(request.durationMinutes());
+        movie.setAgeRating(request.ageRating());
+        movie.setPosterUrl(request.posterUrl());
+        movie.setBannerUrl(request.bannerUrl());
+        movie.setReleaseDate(request.releaseDate());
+        movie.setGenre(genre);
+        movie.setUpdatedAt(java.time.LocalDateTime.now());
+
+        return mapper.toResponse(repository.save(movie));
+    }
+
+    public void delete(Long id) {
+
+        Movie movie = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Movie not found"));
+
+        repository.delete(movie);
+    }
+
 }

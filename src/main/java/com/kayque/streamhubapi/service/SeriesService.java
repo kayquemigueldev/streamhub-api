@@ -9,6 +9,8 @@ import com.kayque.streamhubapi.repository.GenreRepository;
 import com.kayque.streamhubapi.repository.SeriesRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import com.kayque.streamhubapi.dto.UpdateSeriesRequest;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -41,5 +43,36 @@ public class SeriesService {
                 .orElseThrow(() -> new RuntimeException("Series not found"));
 
         return mapper.toResponse(series);
+    }
+    @Transactional
+    public SeriesResponse update(Long id, UpdateSeriesRequest request) {
+
+        Series series = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Series not found"));
+
+        Genre genre = genreRepository.findById(request.genreId())
+                .orElseThrow(() -> new RuntimeException("Genre not found"));
+
+        series.setTitle(request.title());
+        series.setDescription(request.description());
+        series.setReleaseYear(request.releaseYear());
+        series.setSeasonsCount(request.seasonsCount());
+        series.setEpisodesCount(request.episodesCount());
+        series.setAgeRating(request.ageRating());
+        series.setPosterUrl(request.posterUrl());
+        series.setBannerUrl(request.bannerUrl());
+        series.setReleaseDate(request.releaseDate());
+        series.setGenre(genre);
+
+        return mapper.toResponse(repository.save(series));
+    }
+
+    @Transactional
+    public void delete(Long id) {
+
+        Series series = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Series not found"));
+
+        repository.delete(series);
     }
 }
