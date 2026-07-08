@@ -2,8 +2,10 @@ package com.kayque.streamhubapi.service;
 
 import com.kayque.streamhubapi.dto.CreateMovieRequest;
 import com.kayque.streamhubapi.dto.MovieResponse;
+import com.kayque.streamhubapi.entity.Genre;
 import com.kayque.streamhubapi.entity.Movie;
 import com.kayque.streamhubapi.mapper.MovieMapper;
+import com.kayque.streamhubapi.repository.GenreRepository;
 import com.kayque.streamhubapi.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,10 +17,14 @@ import java.util.List;
 public class MovieService {
 
     private final MovieRepository repository;
+    private final GenreRepository genreRepository;
     private final MovieMapper mapper;
 
     public MovieResponse create(CreateMovieRequest request) {
-        Movie movie = mapper.toEntity(request);
+        Genre genre = genreRepository.findById(request.genreId())
+                .orElseThrow(() -> new RuntimeException("Genre not found"));
+
+        Movie movie = mapper.toEntity(request, genre);
 
         Movie savedMovie = repository.save(movie);
 

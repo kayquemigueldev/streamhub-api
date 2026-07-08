@@ -13,6 +13,7 @@ public record MovieResponse(
         String posterUrl,
         String bannerUrl,
         LocalDate releaseDate,
+        GenreResponse genre,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {

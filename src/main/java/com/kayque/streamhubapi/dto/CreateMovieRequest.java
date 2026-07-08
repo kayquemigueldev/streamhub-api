@@ -28,6 +28,9 @@ public record CreateMovieRequest(
 
         String bannerUrl,
 
-        LocalDate releaseDate
+        LocalDate releaseDate,
+
+        @NotNull(message = "Genre id is required")
+        Long genreId
 ) {
 }
