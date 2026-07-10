@@ -19,7 +19,7 @@ Autenticação JWT • Spring Security • JPA • MySQL • Swagger • REST AP
 
 ---
 
-##  Features
+##  Atributos
 
 ✔ JWT Authentication
 
