@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import com.kayque.streamhubapi.dto.UpdateMovieRequest;
+import com.kayque.streamhubapi.dto.PageMovieResponse;
 
 import java.util.List;
 
@@ -46,5 +47,26 @@ public class MovieController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(id);
+    }
+
+    @GetMapping("/search")
+    public PageMovieResponse search(
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) Long genreId,
+            @RequestParam(required = false) Integer releaseYear,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(defaultValue = "title") String sortBy,
+            @RequestParam(defaultValue = "asc") String direction
+    ) {
+        return service.search(
+                title,
+                genreId,
+                releaseYear,
+                page,
+                size,
+                sortBy,
+                direction
+        );
     }
 }

@@ -10,6 +10,11 @@ import com.kayque.streamhubapi.repository.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import com.kayque.streamhubapi.dto.UpdateMovieRequest;
+import com.kayque.streamhubapi.dto.PageMovieResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
@@ -74,6 +79,52 @@ public class MovieService {
                 .orElseThrow(() -> new RuntimeException("Movie not found"));
 
         repository.delete(movie);
+    }
+
+    public PageMovieResponse search(
+            String title,
+            Long genreId,
+            Integer releaseYear,
+            int page,
+            int size,
+            String sortBy,
+            String direction
+    ) {
+        Sort.Direction sortDirection =
+                direction.equalsIgnoreCase("desc")
+                        ? Sort.Direction.DESC
+                        : Sort.Direction.ASC;
+
+        Pageable pageable = PageRequest.of(
+                page,
+                size,
+                Sort.by(sortDirection, sortBy)
+        );
+
+        Page<Movie> movies;
+
+        if (title != null && !title.isBlank()) {
+            movies = repository.findByTitleContainingIgnoreCase(title, pageable);
+        } else if (genreId != null) {
+            movies = repository.findByGenreId(genreId, pageable);
+        } else if (releaseYear != null) {
+            movies = repository.findByReleaseYear(releaseYear, pageable);
+        } else {
+            movies = repository.findAll(pageable);
+        }
+
+        return new PageMovieResponse(
+                movies.getContent()
+                        .stream()
+                        .map(mapper::toResponse)
+                        .toList(),
+                movies.getNumber(),
+                movies.getSize(),
+                movies.getTotalElements(),
+                movies.getTotalPages(),
+                movies.isFirst(),
+                movies.isLast()
+        );
     }
 
 }
